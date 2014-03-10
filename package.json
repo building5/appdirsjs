@@ -1,0 +1,38 @@
+{
+  "name": "appdirsjs",
+  "version": "0.0.1",
+  "author": "David M. Lee, II <leedm777@yahoo.com>",
+  "description": "Node.js port of appdirs",
+  "homepage": "https://github.com/building5/appdirsjs",
+  "scripts": {
+    "jsdoc": "jsdoc README.md index.js",
+    "jshint": "jshint .",
+    "test": "_mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/building5/appdirsjs.git"
+  },
+  "keywords": [
+    "configuration"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^1.17.1",
+    "chai": "^1.9.0",
+    "blanket": "^1.1.6",
+    "jshint": "^2.4.4",
+    "jsdoc": "^3.3.0-alpha4"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10"
+  },
+  "config": {
+    "blanket": {
+      "data-cover-never": [
+        "node_modules"
+      ]
+    }
+  }
+}
