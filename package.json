@@ -1,6 +1,6 @@
 {
   "name": "appdirsjs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "David M. Lee, II <leedm777@yahoo.com>",
   "description": "Node.js port of appdirs",
   "homepage": "https://github.com/building5/appdirsjs",
