@@ -1,8 +1,8 @@
 {
-  "name": "appdirsjs",
+  "name": "appdirs",
   "version": "0.1.0",
   "author": "David M. Lee, II <leedm777@yahoo.com>",
-  "description": "Node.js port of appdirs",
+  "description": "Node.js port of Python's appdirs",
   "homepage": "https://github.com/building5/appdirsjs",
   "scripts": {
     "jsdoc": "jsdoc README.md index.js",
