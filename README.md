@@ -29,7 +29,8 @@ The directories the AppDirs.js can help you locate are:
 
 ## Usage
 
-See the JSDocs for specifics on using the API.
+See the [JSDocs] for specifics on using the API.
 
  [appdirs]: https://github.com/ActiveState/appdirs
  [xdg specification]: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+ [jsdocs]: http://building5.github.io/appdirsjs/
