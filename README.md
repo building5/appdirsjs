@@ -1,5 +1,7 @@
 # AppDirs.js
 
+[![Build Status](https://travis-ci.org/building5/appdirsjs.svg?branch=master)](https://travis-ci.org/building5/appdirsjs)
+
 > The wonderful thing about standards is that there are so many of them to
 > choose from.
 
