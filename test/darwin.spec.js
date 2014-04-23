@@ -7,7 +7,7 @@ var appdirs = require('..'),
     chai = require('chai'),
     expect = chai.expect;
 
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 describe('AppDirs on Mac', function () {
   var homeOrig,

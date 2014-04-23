@@ -47,7 +47,15 @@ var appendNameVersion = function (dir, appname, version) {
   return dir;
 };
 
-var windows = {
+/*jshint maxlen:false */
+/**
+ * Windows appdirs implementation. (unimplemented)
+ *
+ * The standard directory structure for Windows can be found on
+ * [MSDN]{@link http://support.microsoft.com/default.aspx?scid=kb;en-us;310294#XSLTH3194121123120121120120}.
+ */
+/*jshint maxlen:80 */
+exports.windows = {
   // Judging from appdirs.py, Windows support is quite complicated.
   // Maybe another time...
   userDataDir: function (appname, appauthor, version, roaming) {
@@ -70,13 +78,21 @@ var windows = {
   }
 };
 
-var darwin = {
+/*jshint maxlen:false */
+/**
+ * OS X appdirs implementation.
+ *
+ * The standard directory structure for OS X can be found on
+ * [the apple developer site]{@link https://developer.apple.com/library/mac/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html}.
+ */
+/*jshint maxlen:80 */
+exports.darwin = {
   userDataDir: function (appname, appauthor, version, roaming) {
     var dir = path.join(process.env.HOME, 'Library/Application Support');
     return appendNameVersion(dir, appname, version);
   },
   userConfigDir: function (appname, appauthor, version, roaming) {
-    return darwin.userDataDir(appname, appauthor, version, roaming);
+    return exports.darwin.userDataDir(appname, appauthor, version, roaming);
   },
   userCacheDir: function (appname, appauthor, version) {
     var dir = path.join(process.env.HOME, 'Library/Caches');
@@ -90,7 +106,7 @@ var darwin = {
     return dir;
   },
   siteConfigDir: function (appname, appauthor, version, multipath) {
-    return darwin.siteDataDir(appname, appauthor, version, multipath);
+    return exports.darwin.siteDataDir(appname, appauthor, version, multipath);
   },
   userLogDir: function (appname, appauthor, version) {
     var dir = path.join(process.env.HOME, 'Library/Logs');
@@ -98,7 +114,16 @@ var darwin = {
   }
 };
 
-var xdg = {
+/*jshint maxlen:false */
+/**
+ * XDG appdirs implementation.
+ *
+ * The is the standard directory structure appdirs uses for *NIX operating
+ * systems. The XDG spec can be found on
+ * [the FreeDesktop standards site]{@link http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html}.
+ */
+/*jshint maxlen:80 */
+exports.xdg = {
   userDataDir: function (appname, appauthor, version, roaming) {
     var dir = process.env.XDG_DATA_HOME ||
         path.join(process.env.HOME, '.local/share');
@@ -138,7 +163,7 @@ var xdg = {
     }
   },
   userLogDir: function (appname, appauthor, version) {
-    var cacheDir = xdg.userCacheDir(appname, appauthor, version);
+    var cacheDir = exports.xdg.userCacheDir(appname, appauthor, version);
     return path.join(cacheDir, 'log');
   }
 };
@@ -146,11 +171,11 @@ var xdg = {
 var impl = (function () {
   switch (os.platform()) {
     case 'win32':
-      return windows;
+      return exports.windows;
     case 'darwin':
-      return darwin;
+      return exports.darwin;
     default:
-      return xdg;
+      return exports.xdg;
   }
 })();
 
@@ -165,7 +190,7 @@ var impl = (function () {
  *                              (siteDataDir, siteConfigDir).
  * @constructor
  */
-var AppDirs =
+var AppDirs = exports.AppDirs =
     function AppDirs(appname, appauthor, version, roaming, multipath) {
       this.appname = appname;
       this.appauthor = appauthor;
@@ -226,174 +251,145 @@ AppDirs.prototype.userLogDir = function () {
   return impl.userLogDir(this.appname, this.appauthor, this.version);
 };
 
-module.exports = {
-  /*jshint maxlen:false */
-  /**
-   * Windows appdirs implementation. (unimplemented)
-   *
-   * The standard directory structure for Windows can be found on
-   * [MSDN]{@link http://support.microsoft.com/default.aspx?scid=kb;en-us;310294#XSLTH3194121123120121120120}.
-   */
-  windows: windows,
-  /**
-   * OS X appdirs implementation.
-   *
-   * The standard directory structure for OS X can be found on
-   * [the apple developer site]{@link https://developer.apple.com/library/mac/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html}.
-   */
-  darwin: darwin,
-  /**
-   * XDG appdirs implementation.
-   *
-   * The is the standard directory structure appdirs uses for *NIX operating
-   * systems. The XDG spec can be found on
-   * [the FreeDesktop standards site]{@link http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html}.
-   */
-  xdg: xdg,
-  /*jshint maxlen:80 */
-
-  /**
-   * Return full path to the user-specific data dir for this application.
-   *
-   * Typical user cache directories are:
-   * <dl>
-   *    <dt>Mac OS X</dt>
-   *      <dd>~/Library/Application Support/{AppName}</dd>
-   *    <dt>Unix</dt>
-   *      <dd>~/.local/share/{AppName}/log</dd>
-   *    <dt>Win 7 (not roaming)</dt>
-   *      <dd>C:\Users\{username}\AppData\Local\{AppAuthor}\{AppName}</dd>
-   *    <dt>Win 7 (roaming)</dt>
-   *      <dd>C:\Users\{username}\AppData\Roaming\{AppAuthor}\{AppName}</dd>
-   * </dl>
-   *
-   * @param {string} [appname] Application name. If not give, then the base user
-   *    data directory is returned.
-   * @param {string} [appauthor] Application author's name. This falls back to
-   *    appname.
-   * @param {string} [version] Optional version to append to the path. Only
-   *    applied when appname is present.
-   * @param {boolean} [roaming] When set, use the Windows roaming
-   *    appdata directory
-   * @returns {string} User data directory.
-   * @function
-   */
-  userDataDir: impl.userDataDir,
-  /**
-   * Return full path to the user-specific config dir for this application.
-   *
-   * Typical user data directories are:
-   * <dl>
-   *   <dt>Mac OS X</dt>
-   *     <dd>same as user_data_dir</dd>
-   *   <dt>Unix</dt>
-   *     <dd>~/.config/{AppName}</dd>
-   *   <dt>Windows</dt>
-   *     <dd>same as user_data_dir</dd>
-   * </dl>
-   *
-   * @param {string} [appname] Application name. If not give, then the base user
-   *    config directory is returned.
-   * @param {string} [appauthor] Application author's name. This falls back to
-   *    appname.
-   * @param {string} [version] Optional version to append to the path. Only
-   *    applied when appname is present.
-   * @param {boolean} [roaming] When set, use the Windows roaming
-   *    appdata directory
-   * @returns {string} User config directory.
-   * @function
-   */
-  userConfigDir: impl.userConfigDir,
-  /**
-   * Return full path to the user-specific cache dir for this application.
-   *
-   * Typical user cache directories are:
-   * <dl>
-   *   <dt>Mac OS X</dt>
-   *     <dd>~/Library/Caches/{AppName}</dd>
-   *   <dt>Unix</dt>
-   *     <dd>~/.cache/{AppName}</dd>
-   * </dl>
-   *
-   * @param {string} [appname] Application name. If not give, then the base user
-   *    cache directory is returned.
-   * @param {string} [appauthor] Application author's name. This falls back to
-   *    appname.
-   * @param {string} [version] Optional version to append to the path. Only
-   *    applied when appname is present.
-   * @returns {string} User cache directory
-   * @function
-   */
-  userCacheDir: impl.userCacheDir,
-  /**
-   * Return full path to the user-shared data dir for this application.
-   *
-   * Typical site data directories are:
-   * <dl>
-   *   <dt>Mac OS X</dt>
-   *     <dd>/Library/Application Support/{AppName}</dd>
-   *   <dt>Unix</dt>
-   *     <dd>/usr/local/share/{AppName} or /usr/share/{AppName}</dd>
-   * </dl>
-   *
-   * @param {string} [appname] Application name. If not give, then the base site
-   *    data directory is returned.
-   * @param {string} [appauthor] Application author's name. This falls back to
-   *    appname.
-   * @param {string} [version] Optional version to append to the path. Only
-   *    applied when appname is present.
-   * @param {boolean} [multipath] If true, on *NIX, all site data dirs are
-   *                              returned.
-   * @returns {string} Site data directory.
-   * @function
-   */
-  siteDataDir: impl.siteDataDir,
-  /**
-   * Return full path to the user-shared config dir for this application.
-   *
-   * Typical user data directories are:
-   * <dl>
-   *   <dt>Mac OS X</dt>
-   *     <dd>same as site_data_dir</dd>
-   *   <dt>Unix</dt>
-   *     <dd>/etc/xdg/{AppName}</dd>
-   *   <dt>Windows</dt>
-   *     <dd>same as site_data_dir</dd>
-   * </dl>
-   *
-   * @param {string} [appname] Application name. If not give, then the base site
-   *    data directory is returned.
-   * @param {string} [appauthor] Application author's name. This falls back to
-   *    appname.
-   * @param {string} [version] Optional version to append to the path. Only
-   *    applied when appname is present.
-   * @param {boolean} [multipath] If true, on *NIX, all site data dirs are
-   *                              returned.
-   * @returns {string} Site config directory.
-   * @function
-   */
-  siteConfigDir: impl.siteConfigDir,
-  /**
-   * Return full path to the user-specific log dir for this application.
-   *
-   * Typical user cache directories are:
-   * <dl>
-   *   <dt>Mac OS X</dt>
-   *     <dd>~/Library/Logs/{AppName}</dd>
-   *   <dt>Unix</dt>
-   *     <dd>~/.cache/{AppName}/log</dd>
-   * <dl>
-   *
-   * @param {string} [appname] Application name. If not give, then the base site
-   *    data directory is returned.
-   * @param {string} [appauthor] Application author's name. This falls back to
-   *    appname.
-   * @param {string} [version] Optional version to append to the path. Only
-   *    applied when appname is present.
-   * @returns {string} User log directory.
-   * @function
-   */
-  userLogDir: impl.userLogDir,
-
-  AppDirs: AppDirs
-};
+/**
+ * Return full path to the user-specific data dir for this application.
+ *
+ * Typical user cache directories are:
+ * <dl>
+ *    <dt>Mac OS X</dt>
+ *      <dd>~/Library/Application Support/{AppName}</dd>
+ *    <dt>Unix</dt>
+ *      <dd>~/.local/share/{AppName}/log</dd>
+ *    <dt>Win 7 (not roaming)</dt>
+ *      <dd>C:\Users\{username}\AppData\Local\{AppAuthor}\{AppName}</dd>
+ *    <dt>Win 7 (roaming)</dt>
+ *      <dd>C:\Users\{username}\AppData\Roaming\{AppAuthor}\{AppName}</dd>
+ * </dl>
+ *
+ * @param {string} [appname] Application name. If not give, then the base user
+ *    data directory is returned.
+ * @param {string} [appauthor] Application author's name. This falls back to
+ *    appname.
+ * @param {string} [version] Optional version to append to the path. Only
+ *    applied when appname is present.
+ * @param {boolean} [roaming] When set, use the Windows roaming
+ *    appdata directory
+ * @returns {string} User data directory.
+ * @function
+ */
+exports.userDataDir = impl.userDataDir;
+/**
+ * Return full path to the user-specific config dir for this application.
+ *
+ * Typical user data directories are:
+ * <dl>
+ *   <dt>Mac OS X</dt>
+ *     <dd>same as user_data_dir</dd>
+ *   <dt>Unix</dt>
+ *     <dd>~/.config/{AppName}</dd>
+ *   <dt>Windows</dt>
+ *     <dd>same as user_data_dir</dd>
+ * </dl>
+ *
+ * @param {string} [appname] Application name. If not give, then the base user
+ *    config directory is returned.
+ * @param {string} [appauthor] Application author's name. This falls back to
+ *    appname.
+ * @param {string} [version] Optional version to append to the path. Only
+ *    applied when appname is present.
+ * @param {boolean} [roaming] When set, use the Windows roaming
+ *    appdata directory
+ * @returns {string} User config directory.
+ * @function
+ */
+exports.userConfigDir = impl.userConfigDir;
+/**
+ * Return full path to the user-specific cache dir for this application.
+ *
+ * Typical user cache directories are:
+ * <dl>
+ *   <dt>Mac OS X</dt>
+ *     <dd>~/Library/Caches/{AppName}</dd>
+ *   <dt>Unix</dt>
+ *     <dd>~/.cache/{AppName}</dd>
+ * </dl>
+ *
+ * @param {string} [appname] Application name. If not give, then the base user
+ *    cache directory is returned.
+ * @param {string} [appauthor] Application author's name. This falls back to
+ *    appname.
+ * @param {string} [version] Optional version to append to the path. Only
+ *    applied when appname is present.
+ * @returns {string} User cache directory
+ * @function
+ */
+exports.userCacheDir = impl.userCacheDir;
+/**
+ * Return full path to the user-shared data dir for this application.
+ *
+ * Typical site data directories are:
+ * <dl>
+ *   <dt>Mac OS X</dt>
+ *     <dd>/Library/Application Support/{AppName}</dd>
+ *   <dt>Unix</dt>
+ *     <dd>/usr/local/share/{AppName} or /usr/share/{AppName}</dd>
+ * </dl>
+ *
+ * @param {string} [appname] Application name. If not give, then the base site
+ *    data directory is returned.
+ * @param {string} [appauthor] Application author's name. This falls back to
+ *    appname.
+ * @param {string} [version] Optional version to append to the path. Only
+ *    applied when appname is present.
+ * @param {boolean} [multipath] If true, on *NIX, all site data dirs are
+ *                              returned.
+ * @returns {string} Site data directory.
+ * @function
+ */
+exports.siteDataDir = impl.siteDataDir;
+/**
+ * Return full path to the user-shared config dir for this application.
+ *
+ * Typical user data directories are:
+ * <dl>
+ *   <dt>Mac OS X</dt>
+ *     <dd>same as site_data_dir</dd>
+ *   <dt>Unix</dt>
+ *     <dd>/etc/xdg/{AppName}</dd>
+ *   <dt>Windows</dt>
+ *     <dd>same as site_data_dir</dd>
+ * </dl>
+ *
+ * @param {string} [appname] Application name. If not give, then the base site
+ *    data directory is returned.
+ * @param {string} [appauthor] Application author's name. This falls back to
+ *    appname.
+ * @param {string} [version] Optional version to append to the path. Only
+ *    applied when appname is present.
+ * @param {boolean} [multipath] If true, on *NIX, all site data dirs are
+ *                              returned.
+ * @returns {string} Site config directory.
+ * @function
+ */
+exports.siteConfigDir = impl.siteConfigDir;
+/**
+ * Return full path to the user-specific log dir for this application.
+ *
+ * Typical user cache directories are:
+ * <dl>
+ *   <dt>Mac OS X</dt>
+ *     <dd>~/Library/Logs/{AppName}</dd>
+ *   <dt>Unix</dt>
+ *     <dd>~/.cache/{AppName}/log</dd>
+ * <dl>
+ *
+ * @param {string} [appname] Application name. If not give, then the base site
+ *    data directory is returned.
+ * @param {string} [appauthor] Application author's name. This falls back to
+ *    appname.
+ * @param {string} [version] Optional version to append to the path. Only
+ *    applied when appname is present.
+ * @returns {string} User log directory.
+ * @function
+ */
+exports.userLogDir = impl.userLogDir;

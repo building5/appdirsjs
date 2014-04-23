@@ -1,6 +1,5 @@
 <component name="CopyrightManager">
   <settings default="dlee">
-    <module2copyright />
     <LanguageOptions name="__TEMPLATE__">
       <option name="addBlankAfter" value="false" />
       <option name="block" value="false" />
