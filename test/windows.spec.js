@@ -4,6 +4,7 @@
 'use strict';
 
 var appdirs = require('..'),
+    path = require('path'),
     chai = require('chai'),
     expect = chai.expect;
 
@@ -13,22 +14,26 @@ describe('AppDirs on Windows', function () {
   var localAppData,
       appData,
       allUsersProfile,
+      pathJoin,
       uut = appdirs.windows;
 
   before(function () {
     localAppData = process.env.LOCALAPPDATA;
     appData = process.env.APPDATA;
     allUsersProfile = process.env.ALLUSERSPROFILE;
+    pathJoin = path.join;
 
     process.env.LOCALAPPDATA = 'C:\\Users\\fakeuser\\AppData\\Local';
     process.env.APPDATA = 'C:\\Users\\fakeuser\\AppData\\Roaming';
     process.env.ALLUSERSPROFILE = 'C:\\ProgramData';
+    path.join = path.win32.join;
   });
 
   after(function () {
     process.env.LOCALAPPDATA = localAppData;
     process.env.APPDATA = appData;
     process.env.ALLUSERSPROFILE = allUsersProfile;
+    path.join = pathJoin;
   });
 
 
