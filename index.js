@@ -49,32 +49,40 @@ var appendNameVersion = function (dir, appname, version) {
 
 /*jshint maxlen:false */
 /**
- * Windows appdirs implementation. (unimplemented)
+ * Windows appdirs implementation.
  *
  * The standard directory structure for Windows can be found on
  * [MSDN]{@link http://support.microsoft.com/default.aspx?scid=kb;en-us;310294#XSLTH3194121123120121120120}.
  */
 /*jshint maxlen:80 */
 exports.windows = {
-  // Judging from appdirs.py, Windows support is quite complicated.
-  // Maybe another time...
   userDataDir: function (appname, appauthor, version, roaming) {
-    throw new Error('Unimplemented');
+    var dir = roaming ? process.env.APPDATA : process.env.LOCALAPPDATA;
+    return appendNameVersion(dir, appname, version);
   },
   userConfigDir: function (appname, appauthor, version, roaming) {
-    throw new Error('Unimplemented');
+    var dir = roaming ? process.env.APPDATA : process.env.LOCALAPPDATA;
+    return appendNameVersion(dir, appname, version);
   },
   userCacheDir: function (appname, appauthor, version) {
-    throw new Error('Unimplemented');
+    return appendNameVersion(process.env.LOCALAPPDATA, appname, version);
   },
   siteDataDir: function (appname, appauthor, version, multipath) {
-    throw new Error('Unimplemented');
+    var dir = appendNameVersion(process.env.ALLUSERSPROFILE, appname, version);
+    if (multipath) {
+      return [dir];
+    }
+    return dir;
   },
   siteConfigDir: function (appname, appauthor, version, multipath) {
-    throw new Error('Unimplemented');
+    var dir = appendNameVersion(process.env.ALLUSERSPROFILE, appname, version);
+    if (multipath) {
+      return [dir];
+    }
+    return dir;
   },
   userLogDir: function (appname, appauthor, version) {
-    throw new Error('Unimplemented');
+    return appendNameVersion(process.env.ALLUSERSPROFILE, appname, version);
   }
 };
 
